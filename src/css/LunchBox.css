@@ -1,0 +1,37 @@
+.header{
+    display: grid;
+    box-shadow: 0px 6px 0px 0px #f7f7f782;
+    margin-top: 17px;
+    width: 80%;
+    margin:auto;
+}
+
+.header-ul{
+    margin-top: 17px;
+    margin-bottom: 25px;
+}
+
+.header li {
+    padding:28px 64px 16px 64px;
+    margin-left:20px;
+    display: inline;
+    list-style: none;
+    box-shadow: 3px 3px 13px 1px #ddd;
+}
+
+.header li a{
+   font-size:40px;
+   padding:10px;
+   text-align: center;
+   color:#0c0c96
+}
+
+
+
+.img-rounded{
+    width: 10%;
+    border-radius: 50%;
+} 
+.img-avatar{
+    text-align: center;
+}
