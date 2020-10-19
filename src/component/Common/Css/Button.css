@@ -40,3 +40,7 @@
 .align-right{
     float:right;
 }
+
+button:disabled {
+    background: #dddddd;
+  }
