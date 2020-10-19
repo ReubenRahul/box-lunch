@@ -7,6 +7,8 @@ const TableHeader = (props) => {
                 <th> Avatar </th>
                 <th> Name </th>
                 <th> Phone Number </th>
+                <th> Edit </th>
+                <th> Delete </th>
             </tr>
         </thead>
     )

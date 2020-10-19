@@ -40,3 +40,15 @@
 .UserSection{
   margin-top:5em;
 }
+.minimize-form{
+  width:60%;
+  margin:auto;
+}
+
+.mt-100 {
+  margin-top: 20px;
+}
+
+.text-danger{
+  color: red;
+}

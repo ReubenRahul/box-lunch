@@ -1,24 +1,51 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import Button from '../Common/Button';
 import User from '../Users/User/User';
+import axios from '../../axios-order';
+
 const UserComponent = () => {
-    console.log('user component');
-    const [users, setUsers] = useState(
-        [{
-            id: 1,
-            name: 'Testing1',
-            mobile: 1232322
-        },
-        {
-            id: 2,
-            name: 'Rahul',
-            mobile: 1232322
-        }]
-    )
+    let history = useHistory();
+    const [users, setUsers] =useState([]);
+    const [userUpdate, setUserUpdate] = useState(false);
+
+    const updateUserData = (response) => {
+        let fetchedUers = [];
+        for( let key in response.data) {
+            fetchedUers.push({
+                ...response.data[key],
+                id : key
+            });
+        }
+        setUsers(fetchedUers);
+    }
+    useEffect(() => {
+        axios.get('/users.json')
+        .then(response => {
+            updateUserData(response)
+        })
+        .catch(err => {
+            console.log('err', err)
+        })
+    }, [userUpdate]); 
 
 
+    
 
+    const deleteUser = (userId) => {
+        axios.delete(`users/${userId}.json`)
+        .then(response => {
+            setUserUpdate(true);
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+
+    const editUser = (userId) => {
+        history.push(`user/add?edit=${userId}`)
+    }
     return (
         <div className="UserSection" style={{ width: '80%', margin: 'auto' }}>
             <Button
@@ -26,7 +53,7 @@ const UserComponent = () => {
             >
                 <Link to="user/add"> Add User</Link>
             </Button>
-            <User users={users} />
+            <User users={users} deleteHandler ={deleteUser} editUserHandler={editUser}/>
         </div>
     )
 }
