@@ -5,11 +5,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {   BrowserRouter as Router  } from 'react-router-dom';
 import  ErrorBoundary from './ErrorBoundary';
+import { StateProvider } from './StateProvider';
+import reducer, { initialState } from './+store/Reducer';
 ReactDOM.render(
   <React.StrictMode>
       <Router>
         <ErrorBoundary>
+          <StateProvider initialState = {initialState} reducer = {reducer}>
            <App />
+          </StateProvider>
         </ErrorBoundary>
     </Router>
   </React.StrictMode>,

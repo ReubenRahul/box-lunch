@@ -21,34 +21,9 @@ class AddComponent extends Component {
     }
 
     changeHandler = (input) => (event) => {
-       console.log('change  hald')
-        switch (input) {
-            case 'name':
-             this.setState( {
-                 name: event.target.value
-             })   
-            break;
-
-            case 'address':
-             this.setState( {
-                address: event.target.value
-             })   
-            break;
-
-            case 'number':
-             this.setState( {
-                number: event.target.value
-             })   
-            break;
-
-            case 'whatsAppNumber':
-             this.setState( {
-                whatsAppNumber: event.target.value
-             })   
-            break;
-            default:
-            break;
-        }
+       this.setState({
+          [event.target.name] : event.target.value
+       })
     }
 
     checkValidation = () => {
