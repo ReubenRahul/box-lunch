@@ -6,67 +6,64 @@ import Button from '../Common/Button';
 import { Link } from 'react-router-dom';
 import { deleteVendor, fetchVendor } from '../../+store/Urls';
 import DeleteButton from '../../Utils/AgGridHelper/DeleteButton';
+import addMenuButton from '../../Utils/Vendor/AddMenuButton';
+import { useStateValue } from '../../StateProvider';
+import { VENDOR_OPTION } from '../../+store/Action';
 
 
-export  const VendorListComponent = (props) => {
+
+const VendorListComponent = (props) => {
+
+
+    const [  state, dispatch] = useStateValue();
+
+
     const peromiseFunation = (fun) => new Promise ( (resolve) => {
         const res = fun;
         resolve(res)        
-}) 
+    }) 
     const clickHandleData = (id) => {
-
-       
        const pro = peromiseFunation(deleteVendor(id) );
        pro.then( res => {
-           console.log(res , '23')
-        //    const status = userFetch ? false : true;
         setUserFetch(userFetch+1);
        })
-        // console.log(response);
-        // setUserFetch(!userFetch);
     }
+
+    const addMenuClickHandlerData = (id) => {
+        dispatch( {
+            type: 'redirect',
+            url: `/vendor/${id}/add-menu`
+        })
+    } 
     const coloums =  [
-        // { headerName: "Id", field: "id" }, 
-        { headerName: "Row",valueGetter: "node.rowIndex + 1", pinned: true},
+        { headerName: "Row",valueGetter: "node.rowIndex + 1", pinned: true ,  maxWidth: 10,},
         { headerName: "Name", field: "name" , sortable: true, filter: true, editable: true},
-        { headerName: "Address", field: "address" , sortable: true, filter: true},
+        { headerName: "Address", field: "address" , sortable: true, filter: true,},
         { headerName: "Number", field: "number" , sortable: true, filter: true},
-        { headerName: "Whats App Number", field: "whatsAppNumber" , sortable: true, filter: true},
-        { headerName: "Serial Number", field: "id" }, 
-        // { headerName: "Edit", cellRenderer: 'btnCellRenderer', cellRendererParams: {
-        //             clicked: function(field) {
-        //               alert(`${field} was clicked`);
-        //             }
-        //           },
-        //           minWidth: 150
-        //         },
-        // {headerName:"Delete",cellRenderer:deleteButton}
+        { headerName: "Whats App Number", field: "whatsAppNumber" , sortable: true, filter: true, },
+        { headerName: "Serial Number", field: "id",  minWidth: 60, }, 
         {
-            headerName: 'Child/Parent',
+            headerName: 'Delete',
             field: 'value',
             cellRenderer: 'childMessageRenderer',
             colId: 'params',
             clickHandler: clickHandleData,
             editable: false,
-            minWidth: 150,
+            minWidth: 100,
           },
+          { headerName:'Add Menu', field: 'Add Menu', cellRenderer:'addMenuRenderer',addMenuClickHandler: addMenuClickHandlerData,minWidth: 100, }
 
     ];
 
-    // frameworkComponentsNEW: {
-    //     childMessageRenderer: ChildMessageRenderer,
-    //   };
     const [userFetch, setUserFetch] = useState(false);
     const [columnDefs] = useState(coloums );
     const [rowData, setRowData] = useState( [] );
     const [context] = useState({ componentParent: this })
     const [frameworkComponents ] = useState( {
         childMessageRenderer: DeleteButton,
+        addMenuRenderer: addMenuButton
       }); 
 
-    //   columnDefs.cellRendererParams = {
-    //     handleDeleteClick: clickHandleData
-    // }
     useEffect( () => {
         // fetch the vendor details
       const fetchVendorFun = new Promise( (resolve) => {
@@ -83,6 +80,12 @@ export  const VendorListComponent = (props) => {
                 id: key
             })
          }
+
+         dispatch( {
+            type: VENDOR_OPTION,
+            payload:vendorList
+        });
+        console.log(state)
          setRowData(vendorList.reverse());
      })
     }, [userFetch]);
@@ -93,6 +96,11 @@ export  const VendorListComponent = (props) => {
                <Button className="btn btn-primary btn-xs align-right" >
                    <Link to="vendor/add"> Add Vendor </Link>
                </Button>
+
+
+               <Button className="btn btn-primary btn-xs align-right" >
+                   <Link to="order/add"> Add Order </Link>
+               </Button>
          </div> 
          <div  style={{width:"70%", margin:"auto", height: "700px"}}>
            <AgGridReact
@@ -101,11 +109,14 @@ export  const VendorListComponent = (props) => {
                columnDefs ={columnDefs}
                rowData={rowData}
                context={context}
-
-               pagination="true"  paginationPageSize="10" floatingFilter="true" 
+               pagination="true"  
+               paginationPageSize="10" 
+               floatingFilter="true" 
             />
          </div>
           
        </div>
     )
 }
+
+export default VendorListComponent

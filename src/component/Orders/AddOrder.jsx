@@ -1,115 +1,146 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import Form from '../Common/Form/Form'
 import Label from '../Common/Form/Label'
 import Select from '../Common/Form/Select'
 import { quantity } from '../Common/Constant';
 import Input from '../Common/Form/Input';
 import Button from '../Common/Button';
-class AddOrder extends Component {
-    constructor(props) {
-        super(props);
+import { useStateValue } from '../../StateProvider';
+import { db } from '../../Firebase/Firebase';
+import { USERS_OPTION, VENDOR_OPTION } from '../../+store/Action';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-        this.state = {
-            users: [],
-            _quantity : '',
-            _user: '',
-            _date: '',
-            error:[]
-        }
+
+const AddOrder = (props) => {
+
+    const [  {vendorOptions,userOptions}, dispatch] = useStateValue();
+    const [selectedUser, setSelectedUser] = useState('');
+
+  const [vendor, setVendor] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [error, setError] = useState([]);
+  const [selectedQunatity, setSelectedQunatity] = useState(quantity[1])
+//   this.getVendorMenuHandler = this.getVendorMenuHandler.bind(this);
+
+   const formInputHandle = inputType => (event) => {
+       switch(inputType)
+       {
+           case "user":
+             setSelectedUser(event.target.value);
+            break;
+            case "vendor":
+                setVendor(event.target.value);
+            break;
+            case "quantity":
+                setSelectedQunatity(event.target.value);
+            break;
+            case 'date':
+                setDate(event.target.value);
+            break;    
+        default:
+            break;
+       }
+  } 
+
+  useEffect( () => {
+    if(!vendorOptions.length) {
+        // make a request
+        const vendorData = db.ref('vendor').orderByKey();
+        vendorData.once("value", getVendorMenuHandler)
     }
-    componentDidMount()
+
+    if(!userOptions.length)
     {
-        this.setState ({
-            users : [
-                { key:1,value: 'Reuben' },
-                {key:2, value: 'rahul'  }
-              ]
-        } )
+        const userData = db.ref("users").orderByKey();
+        userData.once("value", getUserHandler)
     }
-    formInputHandle = inputType => (event) => {
-        console.log(inputType, event.target.value)
-        const errors = {};
-        switch (inputType) {
-            case '_quantity':
-                if(!event.target.value) {
-                 errors._quantity = ['_quantity is required'];
-                }
-                this.setState( {
-                    _quantity: event.target.value
-                })
-            break;
-            case '_user':
-                if(!event.target.value) {
-                    errors._user = ['_user is required'];
-                }
-                this.setState( {
-                    _user: event.target.value
-                })
-            break;
+  }, [])
 
-            case '_date':
-                if(!event.target.value) {
-                 errors._date = ['_date is required'];
-                }
-                this.setState( {
-                    _date: event.target.value,
-                    error: errors
-                })
-            break;
 
-            default:
-            break;
-        }
-    }
-
-    handleSubmit = (event) => {
-        event.preventDefault();
-        
-// form request will go here
-
-    }
-
-    render () {
-        const { users, _quantity, _user, _date } = this.state;
-        return (
-            <Form style={{width:"60%", margin: 'auto'}} onSubmit={this.handleSubmit}>
-                   <div className="form-group">
-                    <Label value="Quantity" />
-                        <Select 
-                            name="quantity"
-                            value ={_quantity}
-                            options = {quantity}
-                            onChange ={this.formInputHandle("_quantity")}
-                        />
-                    </div>
-
-                <div className="form-group">
-                    <Label value="User Name" />
-                        <Select 
-                            name="user"
-                            value={_user}
-                            options = {users}
-                            onChange ={this.formInputHandle("_user")}
-                        />
-                </div>
-
-                <div className="form-group">
-                          <Label value="Date"/>
-                          <Input 
-                            type="date" 
-                            name="date" 
-                            value={_date}
-                            placeholder="date" 
-                            onChange ={this.formInputHandle('_date')}
-                         />
-                 </div>
-
-                 <div style={{marginTop:"20px"}}>
-                     <Button className="btn btn-primary mt-100">Save Record</Button>
-                 </div>
-               </Form>
-        )
+const getUserHandler = items => {
+    if(items.val())
+    {
+        const users = Object.values(items.val());
+        const userKey = Object.keys(items.val());
+        const userData = [];
+        users.map( (values, key) => {
+            userData.push( {
+                name:values.name,
+                id:userKey[key]
+            })
+        });
+        dispatch( {
+            type:USERS_OPTION,
+            payload:userData
+        })
+        setSelectedUser(userData[0].id)
     }
 }
+ const getVendorMenuHandler = (items) => {
+   if (items.val())
+   {
+       const vendor = Object.values(items.val());
+       const objectKeys = Object.keys(items.val());
+       const vendorMenu = [];
+            vendor.map((values, key) => {
+                vendorMenu.push({
+                    ...values,
+                    id: objectKeys[key]
+                });
+            })
 
+            dispatch({
+                type: VENDOR_OPTION,
+                payload:vendorMenu
+            })
+   }
+  }
+
+  const handleSubmit =(event) => {
+    event.preventDefault();
+  }
+    return (
+        <Form style={{width:"60%", margin: 'auto'}} onSubmit={handleSubmit}>
+               <div className="form-group">
+                <Label value="Vendor" />
+                    <Select 
+                        name="vendor"
+                        value ={vendor}
+                        options = {vendorOptions}
+                        onChange ={formInputHandle("vendor")}
+                    />
+                </div>
+
+               <div className="form-group">
+                <Label value="Quantity" />
+                    <Select 
+                        name="quantity"
+                        value={selectedQunatity}
+                        options = {quantity}
+                        onChange ={formInputHandle("quantity")}
+                    />
+                </div>
+
+            <div className="form-group">
+                <Label value="User Name" />
+                    <Select 
+                        name="user"
+                        value={selectedUser}
+                        options = {userOptions}
+                        onChange ={formInputHandle("user")}
+                    />
+            </div>
+
+            <div className="form-group">
+                      <Label value="Date"/>
+                      <DatePicker name="date" selected={date} onChange={date => setDate(date)} />
+             </div>
+
+             <div style={{marginTop:"20px"}}>
+                 <Button className="btn btn-primary mt-100">Save Record</Button>
+             </div>
+           </Form>
+    )
+} 
 export default AddOrder;

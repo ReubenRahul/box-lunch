@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, lazy } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Button from '../Common/Button';
 import User from '../Users/User/User';
 import axios from '../../axios-order';
+import { useStateValue } from '../../StateProvider';
+import { USERS_OPTION } from '../../+store/Action';
+
+// const User = lazy( () => import('../Users/User/User') )
 
 const UserComponent = () => {
+    const [{userOptions} , dispatch] = useStateValue();
     let history = useHistory();
     const [users, setUsers] =useState([]);
     const [userUpdate, setUserUpdate] = useState(false);
@@ -17,6 +22,10 @@ const UserComponent = () => {
                 id : key
             });
         }
+        dispatch({
+            type:USERS_OPTION,
+            payload:fetchedUers
+        })
         setUsers(fetchedUers);
     }
     useEffect(() => {
@@ -48,12 +57,14 @@ const UserComponent = () => {
     }
     return (
         <div className="UserSection" style={{ width: '80%', margin: 'auto' }}>
-            <Button
-                className="btn btn-primary btn-xs align-right"
-            >
-                <Link to="user/add"> Add User</Link>
-            </Button>
-            <User users={users} deleteHandler ={deleteUser} editUserHandler={editUser}/>
+            <Suspense fallback ={ <h2> Loading..</h2>}>
+                <Button
+                    className="btn btn-primary btn-xs align-right"
+                >
+                    <Link to="user/add"> Add User</Link>
+                </Button>
+                <User users={users} deleteHandler ={deleteUser} editUserHandler={editUser}/>
+            </Suspense>
         </div>
     )
 }
