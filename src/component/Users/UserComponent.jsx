@@ -3,10 +3,13 @@ import { Link, useHistory } from 'react-router-dom';
 import Button from '../Common/Button';
 import User from '../Users/User/User';
 import axios from '../../axios-order';
+import { useStateValue } from '../../StateProvider';
+import { USERS_OPTION } from '../../+store/Action';
 
 // const User = lazy( () => import('../Users/User/User') )
 
 const UserComponent = () => {
+    const [{userOptions} , dispatch] = useStateValue();
     let history = useHistory();
     const [users, setUsers] =useState([]);
     const [userUpdate, setUserUpdate] = useState(false);
@@ -19,6 +22,10 @@ const UserComponent = () => {
                 id : key
             });
         }
+        dispatch({
+            type:USERS_OPTION,
+            payload:fetchedUers
+        })
         setUsers(fetchedUers);
     }
     useEffect(() => {

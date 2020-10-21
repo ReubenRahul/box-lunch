@@ -1,6 +1,6 @@
 // this component dedicated for add the menu for dedicated vendor
 
-import React, { PureComponent, Suspense } from 'react';
+import React, { PureComponent } from 'react';
 import { db } from '../../../Firebase/Firebase';
 import Button from '../../Common/Button';
 import Form from '../../Common/Form/Form';
@@ -151,9 +151,7 @@ class AddVendorMenu extends PureComponent {
         return (
             <div>
                 <Button onClick={() => this.setState(state => ({ showForm: !state.showForm }))} > {showForm ? 'Hide' : 'Show'} Form</Button>
-                <Suspense fallback={<h2> Loading...</h2>} >
                   {vendorMenu && <VendorMenuList menus={vendorMenu} {...this.state} deleteClickHandler={this.deleteClickHandler} />}
-                </Suspense>
                 { showForm &&
                     <Form onSubmit={this.handleSubmit}>
                         {errors && errors.map((error, index) => {

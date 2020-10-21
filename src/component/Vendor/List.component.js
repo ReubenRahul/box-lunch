@@ -8,19 +8,20 @@ import { deleteVendor, fetchVendor } from '../../+store/Urls';
 import DeleteButton from '../../Utils/AgGridHelper/DeleteButton';
 import addMenuButton from '../../Utils/Vendor/AddMenuButton';
 import { useStateValue } from '../../StateProvider';
+import { VENDOR_OPTION } from '../../+store/Action';
 
 
 
-export  const VendorListComponent = (props) => {
+const VendorListComponent = (props) => {
 
 
-    const [ {redirect}, dispatch] = useStateValue();
+    const [  state, dispatch] = useStateValue();
 
 
     const peromiseFunation = (fun) => new Promise ( (resolve) => {
         const res = fun;
         resolve(res)        
-}) 
+    }) 
     const clickHandleData = (id) => {
        const pro = peromiseFunation(deleteVendor(id) );
        pro.then( res => {
@@ -79,6 +80,12 @@ export  const VendorListComponent = (props) => {
                 id: key
             })
          }
+
+         dispatch( {
+            type: VENDOR_OPTION,
+            payload:vendorList
+        });
+        console.log(state)
          setRowData(vendorList.reverse());
      })
     }, [userFetch]);
@@ -88,6 +95,11 @@ export  const VendorListComponent = (props) => {
         <div>
                <Button className="btn btn-primary btn-xs align-right" >
                    <Link to="vendor/add"> Add Vendor </Link>
+               </Button>
+
+
+               <Button className="btn btn-primary btn-xs align-right" >
+                   <Link to="order/add"> Add Order </Link>
                </Button>
          </div> 
          <div  style={{width:"70%", margin:"auto", height: "700px"}}>
@@ -106,3 +118,5 @@ export  const VendorListComponent = (props) => {
        </div>
     )
 }
+
+export default VendorListComponent
