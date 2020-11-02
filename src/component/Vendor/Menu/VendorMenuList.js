@@ -9,7 +9,7 @@ import { db } from '../../../Firebase/Firebase';
 const VendorMenuList = (props) => {
  
     const coloums = [
-        {headerName:'Row', valueGetter:"node.rowIndex +1", pinned:true},
+        {headerName:'Row', valueGetter:"node.rowIndex +1", pinned:true, width: '60px'},
         {headerName:'Price', field:'price',sortable:'true'},
         {headerName:'Details', field:'details'},
         {headerName:'Delete', field:'key', cellRenderer:'deleteButtonRenderer', colId:"id", clickHandler:props.deleteClickHandler, editable:false}

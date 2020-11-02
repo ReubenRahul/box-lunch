@@ -8,7 +8,9 @@ import { deleteVendor, fetchVendor } from '../../+store/Urls';
 import DeleteButton from '../../Utils/AgGridHelper/DeleteButton';
 import addMenuButton from '../../Utils/Vendor/AddMenuButton';
 import { useStateValue } from '../../StateProvider';
-import { VENDOR_OPTION } from '../../+store/Action';
+import { VENDOR_OPTION,VENDOR_MENU } from '../../+store/Action';
+import { getMenuDetails } from '../../+store/FirebaseUrls';
+import { fetchVendorAction, deleteVendorAction } from '../../+store/URL/VendorActions/VendorAction';
 
 
 
@@ -23,10 +25,12 @@ const VendorListComponent = (props) => {
         resolve(res)        
     }) 
     const clickHandleData = (id) => {
-       const pro = peromiseFunation(deleteVendor(id) );
-       pro.then( res => {
-        setUserFetch(userFetch+1);
-       })
+        deleteVendorAction(id).then(res => setUserFetch(userFetch+1))
+    //     console.log('id', id)
+    //    const pro = peromiseFunation(deleteVendor(id) );
+    //    pro.then( res => {
+    //     setUserFetch(userFetch+1);
+    //    })
     }
 
     const addMenuClickHandlerData = (id) => {
@@ -35,6 +39,9 @@ const VendorListComponent = (props) => {
             url: `/vendor/${id}/add-menu`
         })
     } 
+   
+
+    
     const coloums =  [
         { headerName: "Row",valueGetter: "node.rowIndex + 1", pinned: true ,  maxWidth: 10,},
         { headerName: "Name", field: "name" , sortable: true, filter: true, editable: true},
@@ -54,7 +61,6 @@ const VendorListComponent = (props) => {
           { headerName:'Add Menu', field: 'Add Menu', cellRenderer:'addMenuRenderer',addMenuClickHandler: addMenuClickHandlerData,minWidth: 100, }
 
     ];
-
     const [userFetch, setUserFetch] = useState(false);
     const [columnDefs] = useState(coloums );
     const [rowData, setRowData] = useState( [] );
@@ -64,31 +70,15 @@ const VendorListComponent = (props) => {
         addMenuRenderer: addMenuButton
       }); 
 
+
     useEffect( () => {
-        // fetch the vendor details
-      const fetchVendorFun = new Promise( (resolve) => {
-          const res = fetchVendor();
-          resolve(res);
-      })
-
-     fetchVendorFun.then(res => {
-         let vendorList = [];
-         for( let key in res.result) {
-            vendorList.push({
-                //key --> index key
-                ...res.result[key],
-                id: key
-            })
-         }
-
-         dispatch( {
-            type: VENDOR_OPTION,
-            payload:vendorList
+       fetchVendorAction().then( vendorList => {
+              dispatch( {  type: VENDOR_OPTION,  payload:vendorList    });
+            setRowData(vendorList.reverse());
         });
-        console.log(state)
-         setRowData(vendorList.reverse());
-     })
-    }, [userFetch]);
+      
+    }, [userFetch])
+     
     
     return  (
         <div className="ag-theme-alpine">  
@@ -102,7 +92,7 @@ const VendorListComponent = (props) => {
                    <Link to="order/add"> Add Order </Link>
                </Button>
          </div> 
-         <div  style={{width:"70%", margin:"auto", height: "700px"}}>
+         <div  style={{width:"100%", margin:"auto", height: "700px"}}>
            <AgGridReact
                cellEditingStarted={true}
                frameworkComponents={frameworkComponents}

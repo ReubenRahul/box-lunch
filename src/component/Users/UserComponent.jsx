@@ -5,7 +5,7 @@ import User from '../Users/User/User';
 import axios from '../../axios-order';
 import { useStateValue } from '../../StateProvider';
 import { USERS_OPTION } from '../../+store/Action';
-
+import { fetchUsers, deleteUserAction } from '../../+store/URL/User/UsersUrls'
 // const User = lazy( () => import('../Users/User/User') )
 
 const UserComponent = () => {
@@ -14,41 +14,27 @@ const UserComponent = () => {
     const [users, setUsers] =useState([]);
     const [userUpdate, setUserUpdate] = useState(false);
 
-    const updateUserData = (response) => {
-        let fetchedUers = [];
-        for( let key in response.data) {
-            fetchedUers.push({
-                ...response.data[key],
-                id : key
-            });
-        }
-        dispatch({
-            type:USERS_OPTION,
-            payload:fetchedUers
-        })
-        setUsers(fetchedUers);
-    }
     useEffect(() => {
-        axios.get('/users.json')
-        .then(response => {
-            updateUserData(response)
-        })
-        .catch(err => {
-            console.log('err', err)
-        })
+        fetchUsers().then( (res) => {
+            dispatch( {  type:USERS_OPTION, payload:res  })
+            setUsers(res);
+            }
+        );
     }, [userUpdate]); 
 
 
     
 
     const deleteUser = (userId) => {
-        axios.delete(`users/${userId}.json`)
-        .then(response => {
-            setUserUpdate(true);
-        })
-        .catch(err => {
-            console.log(err)
-        })
+        deleteUserAction(userId);
+        setUserUpdate(true);
+        // axios.delete(`users/${userId}.json`)
+        // .then(response => {
+        //     setUserUpdate(true);
+        // })
+        // .catch(err => {
+        //     console.log(err)
+        // })
     }
 
 

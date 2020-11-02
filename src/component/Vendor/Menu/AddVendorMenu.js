@@ -8,7 +8,8 @@ import Input from '../../Common/Form/Input';
 import TextArea from '../../Common/Form/TextArea';
 import firebase from 'firebase';
 import VendorMenuList from './VendorMenuList';
-
+import { addMenuAction, getVendorMenu, deleteMenuAction } from '../../../+store/URL/MenuActions';
+import { editVendorAction } from '../../../+store/URL/VendorActions/VendorAction';
 class AddVendorMenu extends PureComponent {
 
     // firebase.database().ref("Profiles").orderByChild("uid").equalTo(this.state.authUser.uid).once("value",snapshot => {
@@ -37,11 +38,26 @@ class AddVendorMenu extends PureComponent {
         //.orderByChild("name").equalTo("Janna Hardy")
         //.orderByKey().equalTo("-MJzbZ-bV3ijq_AEkbfL")
 
+            // fireabase----
+        // const vendorData = db.ref(`menu`).orderByChild('vendorId').equalTo(params.id);
+        // vendorData.once('value', this.getVendorMenuHandler);
+        // const menus = db.ref('vendor').orderByKey().equalTo(params.id);
+        // menus.once('value', this.onDataChange)
+        
+        getVendorMenu(params.id).then(res => {
+            this.getVendorMenuHandler(res)
+        }).catch(err => console.log(err, 'error occur'))
 
-        const vendorData = db.ref(`menu`).orderByChild('vendorId').equalTo(params.id);
-        vendorData.once('value', this.getVendorMenuHandler);
-        const menus = db.ref('vendor').orderByKey().equalTo(params.id);
-        menus.once('value', this.onDataChange)
+        editVendorAction(params.id).then(res => {
+            this.onDataChange(res);
+        });
+       
+       
+
+
+        // firestore ---
+       const responseData =  getVendorMenu(params.id)
+    //    this.onDataChange(responseData);
     }
     resetFormStat = () => {
         this.setState({
@@ -50,28 +66,16 @@ class AddVendorMenu extends PureComponent {
         })
     }
     getVendorMenuHandler(items) {
-
-        if (items.val()) {
-            const vendor = Object.values(items.val());
-            const objectKeys = Object.keys(items.val());
-            const vendorMenu = [];
-            vendor.map((values, key) => {
-                vendorMenu.push({
-                    ...values,
-                    id: objectKeys[key]
-                });
-            })
             this.setState({
-                vendorMenu
+                vendorMenu: items
             })
-        }
     }
 
-    addIntoVendorMenu = (key) => (items) => {
+    addIntoVendorMenu =  (id) => (items) => {
         const vendorMenuClone = [...this.state.vendorMenu];
         vendorMenuClone.push({
-            id: key,
-            ...items.val()
+            ...items,
+            id: id
         })
         this.setState({
             vendorMenu: vendorMenuClone,
@@ -81,10 +85,10 @@ class AddVendorMenu extends PureComponent {
 
 
     onDataChange(items) {
-        const vendor = Object.values(items.val())
+        // const vendor = Object.values(items.val())
         this.setState({
-            vendor: vendor,
-            vendorName: vendor[0].name
+            vendor: items,
+            vendorName: items.name
         })
     }
 
@@ -121,30 +125,39 @@ class AddVendorMenu extends PureComponent {
                 vendorId: this.state.vendorId,
                 price: this.state.price,
                 details: this.state.details,
-                timestamps: firebase.database.ServerValue.TIMESTAMP
+                timestamps:  firebase.firestore.FieldValue.serverTimestamp()
             }
-            const res = db.ref('menu').push(data);
-            const key = res.getKey();
-            if (key) {
-
-                let menuRef = db.ref('menu/' + key);
-                menuRef.once('value', this.addIntoVendorMenu(key));
-            }
+           addMenuAction(data).then (res => {
+                if (res.status === 201) {
+                    this.addIntoVendorMenu(res.id)(data);
+                } 
+            });
         }
 
         event.preventDefault();
     }
 
     deleteClickHandler = (id) => {
-        db.ref('menu').child(id).remove();
-        const vendorMenuClone = [...this.state.vendorMenu];
-        const arrayIndex = vendorMenuClone.findIndex((item) => {
-            return item.id === id;
-        });
-        vendorMenuClone.splice(arrayIndex, 1);
-        this.setState({
-            vendorMenu: vendorMenuClone
+        deleteMenuAction(id).then( res => {
+            if ( res.status === 204)
+            {
+                const vendorMenuClone = [...this.state.vendorMenu];
+                const arrayIndex = vendorMenuClone.findIndex( (item) => (item.id ===id ));
+                vendorMenuClone.splice( arrayIndex, 1 );
+                this.setState( {
+                    vendorMenu:vendorMenuClone
+                });
+            }
         })
+        // db.ref('menu').child(id).remove();
+        // const vendorMenuClone = [...this.state.vendorMenu];
+        // const arrayIndex = vendorMenuClone.findIndex((item) => {
+        //     return item.id === id;
+        // });
+        // vendorMenuClone.splice(arrayIndex, 1);
+        // this.setState({
+        //     vendorMenu: vendorMenuClone
+        // })
     }
     render() {
         const { vendorName, price, details, errors, vendorMenu, showForm } = this.state;

@@ -5,6 +5,8 @@ import Form from '../Common/Form/Form';
 import Input from '../Common/Form/Input';
 import '../Common/Form/Form.css';
 import axios from '../../axios-order';
+import { addUser, editUserAction, updateUerAction } from '../../+store/URL/User/UsersUrls';
+
 const AddUser = (props) => {
     let history = useHistory();
     const urlParams =  new URLSearchParams(window.location.search);
@@ -20,15 +22,17 @@ const AddUser = (props) => {
         event.preventDefault();
         const data = {  name,  phone  }
         if (editUserId) {
-            axios.put(`users/${editUserId}.json`,  data  )
-            .then(response => { history.push('/')   })
+            updateUerAction(editUserId,data ).then(response => { history.push('/')   })
             .catch(err => { console.log(err);   })
              return true;
         }
-    
-        axios.post('/users.json', data)
-        .then(response => {  history.push('/') })
-        .catch(err => console.log(err));
+       addUser(data).then( res => {
+           history.push('/')
+       } )
+    //    console.log('res', res);
+        // axios.post('/users.json', data)
+        // .then(response => {  history.push('/') })
+        // .catch(err => console.log(err));
      
     }
     const formInputHandle = (inputType) => (event) =>{
@@ -57,11 +61,10 @@ const AddUser = (props) => {
   
     useEffect( () => {
         if (editUserId) {
-           
-            axios.get(`users/${editUserId}.json`)
-            .then(response => {
-                 setName(response.data.name);
-                 setPhone(response.data.phone);
+            editUserAction(editUserId).then(response => {
+                console.log(response);
+                 setName(response.name);
+                 setPhone(response.phone);
                  setBtnString('Update Record')
             })
          }

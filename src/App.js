@@ -7,11 +7,11 @@ import { Redirect } from 'react-router-dom';
 function App() {
 
   const [ {redirect}] = useStateValue();
- 
+
   return (
     <div className="App">
           <LunchBox />
-         <RouteLinks />
+          <RouteLinks />
           {redirect && <Redirect to = {redirect} />}
     </div>
   );

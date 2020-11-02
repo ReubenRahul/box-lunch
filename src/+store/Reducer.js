@@ -1,19 +1,18 @@
-import { USERS_OPTION, VENDOR_OPTION } from "./Action";
+import { USERS_OPTION, VENDOR_OPTION, VENDOR_MENU } from "./Action";
 
 export const initialState = {
      redirect: '',
      vendorOptions:[],
-     userOptions:[]
+     userOptions:[],
+     vendorMenus:[]
  };
  const reducer = (state =initialState, action)  => {
-     console.log('something dispatch', action);
      switch( action.type) {
         case 'redirect':
         return {
             ...state,
             redirect: action.url
         }
-
         case VENDOR_OPTION:
             let vendorOpt = {};
             (action.payload).forEach( (vendor) =>{
@@ -22,15 +21,22 @@ export const initialState = {
             return {
                 ...state,
                 vendorOptions: vendorOpt
-            }
-        case USERS_OPTION:
+        }
+        case USERS_OPTION: // for the dropdown
             let usersOpt ={};
             (action.payload).forEach( user => {
-                usersOpt[`${user.id}`] = user.name;
+                usersOpt[`${user.key}`] = user.name;
             })
             return {
                 ...state,
                 userOptions: usersOpt
+        }
+        case VENDOR_MENU:
+            // i will get payload
+            //  i will get the vendor
+            return {
+                ...state,
+                vendorMenus:action.payload
             }
         default:
         return state;

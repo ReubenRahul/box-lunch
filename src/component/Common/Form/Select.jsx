@@ -1,12 +1,6 @@
 import React from 'react';
 
 const Select = (props) => {
-    if(props.name==="vendors")
-    {
-        console.log(props,'props',props.length)
-        console.log( props.options,'props')
-    }
-    
     return (
         <select
         {...props}

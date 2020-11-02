@@ -52,3 +52,10 @@
 .text-danger{
   color: red;
 }
+
+.inline-sec{
+  display:inline !important
+}
+.inline-flex-sec{
+  display:inline-flex !important
+}

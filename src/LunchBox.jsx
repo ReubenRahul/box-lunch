@@ -12,10 +12,10 @@ const LunchBox = () => {
         <header>
             <div className="header">
               <ul className="header-ul">
-                  <li> <Link to = "/"> <FontAwesomeIcon icon={faUserFriends } /> </Link> </li>
-                  <li>  <Link  to="/order">  <FontAwesomeIcon icon={faShoppingCart} /> </Link> </li>
-                  <li>  <Link  to="/vendors">  <FontAwesomeIcon icon={faPizzaSlice} /> </Link> </li>
-                  <li> <a> <FontAwesomeIcon icon={faMoneyBill} /> </a> </li>
+                  <li> <Link to = "/"> <FontAwesomeIcon title = "Users" icon={faUserFriends } /> </Link> </li>
+                  <li>  <Link  to="/vendors">  <FontAwesomeIcon title = "Vendor" icon={faPizzaSlice} /> </Link> </li>
+                  <li>  <Link  to="/order">  <FontAwesomeIcon  title = "Order" icon={faShoppingCart} /> </Link> </li>
+                  <li> <Link  to="/testing"> <FontAwesomeIcon title = "Billing"  icon={faMoneyBill} /> </Link> </li>
               </ul>
 
             </div>
