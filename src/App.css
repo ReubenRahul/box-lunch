@@ -59,3 +59,25 @@
 .inline-flex-sec{
   display:inline-flex !important
 }
+
+.Ag_Grid_Custom{
+  width: 80%;
+  margin: auto;
+  height: 450px
+}
+.display-content
+{
+  display: contents !important;
+}
+
+.display-inline
+{
+  display: inline !important;
+}
+
+.display-flex{
+  display:flex !important;
+}
+.mt-30{
+ margin-top:30px !important;
+}
