@@ -3,6 +3,10 @@ const addedResponse = {
     status: 201,
     msg: 'Added'
 }
+const updatedResponse = {
+    status:200,
+    msg: "Updated"
+}
 
 const deleteResponse = {
     status: 204,// not content
@@ -11,5 +15,6 @@ const deleteResponse = {
 
 export {
     addedResponse,
-    deleteResponse
+    deleteResponse,
+    updatedResponse
 }

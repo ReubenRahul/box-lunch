@@ -88,20 +88,17 @@ const AddOrder = (props) => {
                     type: VENDOR_MENU,
                     payload: data,
                 });
+                menuOptionHandler(data);
             })
-
-            // getMenuDetails.then(data => {
-            //     dispatch({
-            //         type: VENDOR_MENU,
-            //         payload: data,
-            //     })
-            //     setMenuOptions(data[selectedVendor]);
-            // })
+            .catch(err => {
+                console.log('err', err);
+            })
+            return ;
         }
-     
-        const selectedVendorMenu =  [...vendorMenus].filter(res => res.vendorId == selectedVendor);
-        setMenuOptions(selectedVendorMenu);
+        menuOptionHandler(vendorMenus);
+
     }, [selectedVendor])
+
 
     useEffect(() => {
         if (menuOptions && menuOptions.length) {
@@ -109,6 +106,14 @@ const AddOrder = (props) => {
         }
     }, [menuOptions])
 
+
+    const menuOptionHandler = (vendorMenus) => {
+        const selectedVendorMenu =  vendorMenus.filter(res => res.vendorId === selectedVendor).map(res => {
+            res.value =  `${res.price} - ${res.details}`
+            return res;
+        });
+        setMenuOptions(selectedVendorMenu);
+    }
 
     const handleSubmit = (event) => {
         formValidation();
@@ -118,9 +123,10 @@ const AddOrder = (props) => {
             user: {
                 name: userOptions[selectedUser]
             },
+            isPaid: false,
             vendorMenu: {
                 vendor: vendorOptions[selectedVendor],
-                vedorId: selectedVendor,
+                vendorId: selectedVendor,
                 menu: {
                     menuId: selectedVendorMenuOption,
                     price: selectedVendorMenuOpt[0].price,

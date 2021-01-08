@@ -25,7 +25,10 @@ const VendorListComponent = (props) => {
         resolve(res)        
     }) 
     const clickHandleData = (id) => {
-        deleteVendorAction(id).then(res => setUserFetch(userFetch+1))
+        deleteVendorAction(id).then(res => {
+         console.log("userFetch", {userFetch})
+            setUserFetch(userFetch+1)
+        })
     //     console.log('id', id)
     //    const pro = peromiseFunation(deleteVendor(id) );
     //    pro.then( res => {
@@ -74,6 +77,7 @@ const VendorListComponent = (props) => {
     useEffect( () => {
        fetchVendorAction().then( vendorList => {
               dispatch( {  type: VENDOR_OPTION,  payload:vendorList    });
+              console.log('vendorList', {vendorList})
             setRowData(vendorList.reverse());
         });
       

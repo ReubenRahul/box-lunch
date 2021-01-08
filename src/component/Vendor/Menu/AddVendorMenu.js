@@ -43,7 +43,7 @@ class AddVendorMenu extends PureComponent {
         // vendorData.once('value', this.getVendorMenuHandler);
         // const menus = db.ref('vendor').orderByKey().equalTo(params.id);
         // menus.once('value', this.onDataChange)
-        
+
         getVendorMenu(params.id).then(res => {
             this.getVendorMenuHandler(res)
         }).catch(err => console.log(err, 'error occur'))
@@ -51,8 +51,8 @@ class AddVendorMenu extends PureComponent {
         editVendorAction(params.id).then(res => {
             this.onDataChange(res);
         });
-       
-       
+
+
 
 
         // firestore ---
@@ -66,6 +66,7 @@ class AddVendorMenu extends PureComponent {
         })
     }
     getVendorMenuHandler(items) {
+        console.log(items)
             this.setState({
                 vendorMenu: items
             })
@@ -130,7 +131,7 @@ class AddVendorMenu extends PureComponent {
            addMenuAction(data).then (res => {
                 if (res.status === 201) {
                     this.addIntoVendorMenu(res.id)(data);
-                } 
+                }
             });
         }
 

@@ -8,6 +8,8 @@ import AddComponent from '../component/Vendor/Add.component';
 import  VendorListComponent  from '../component/Vendor/List.component';
 import TestingComponent from '../component/TestingComponent';
 import AddVendorMenu from '../component/Vendor/Menu/AddVendorMenu';
+import ListComponent  from '../component/Billing/List.Component';
+import loginForm from "../component/login/form";
 //let do this lazy
 // const Product = lazy(() => import('./ProductHandler'));
 
@@ -29,12 +31,13 @@ const RouteLinks = () => {
                 <Route exact path ="/vendor/add" component={AddComponent} />
                 <Route exact path = "/vendors" component ={VendorListComponent} />
                 <Route exact path = "/" component = {UserComponent}/>
-                <Route exact path="/testing" component={TestingComponent} />
+                <Route exact path ="/billing/:userId?/user" component={ListComponent} />
+                <Route exact path="/testing" component={loginForm} />
                 <Route path=""  render= {() => (<div> <h2> 404 Url Not Found </h2> </div>)} />
             </Switch>
-                
+
         </div>
-            
+
     )
 }
 
