@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                import { billingCollection } from '../Collections';
+ import { billingCollection } from '../Collections';
 import {addedResponse} from "../Status";
 
 const addBilling = (params) => {

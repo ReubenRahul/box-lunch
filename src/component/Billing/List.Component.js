@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import { fetchUserOrderOnDateRange } from '../../+store/URL/OrderActions';
 import {agGridDateFormat,dateFormat} from "../Common/Constant";
 import { getDateFromTimestamps } from '../../Utils/helper'
+import { Link } from 'react-router-dom';
 // Mon Nov 09 2020 18:23:19 20GMT+0530 20(India 20Standard 20Time)
 // Mon Nov 09 2020 18:29:49 GMT+0530 (India Standard Time)
 
@@ -99,6 +100,9 @@ const ListComponent = (props) => {
         <div className="display-flex mt-30">
                 <div className="display-content">
                     <div className="ag-theme-alpine" style={{width: "70%"}}>
+                        <div className = "align-right">
+                           <Link to = "billing/add"> Add Payment Bill </Link>
+                        </div>
                         <DatePicker
                             selected ={startDate}
                             onChange={onChange}

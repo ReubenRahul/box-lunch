@@ -14,10 +14,16 @@ const getDateTimestamps = (date) => {
    return dateTime.getTime();
 }
 
+const getFirstDayOfNextMonth =  (date) =>{
+    return  new Date(date.getFullYear(), date.getMonth() + 2, 0);
+
+}
+
 const getDateFromTimestamps = timeStamps => new Date(parseInt(timeStamps) );
 
 export {
     convertDate,
     getDateTimestamps,
-    getDateFromTimestamps
+    getDateFromTimestamps,
+    getFirstDayOfNextMonth
 }

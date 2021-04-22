@@ -23,6 +23,8 @@ import ReactToPrint, { PrintContextConsumer } from 'react-to-print';
 
 
 const DateFormat = { year: "2-digit", month: "short", day: "2-digit" };
+
+const CellDateFormat = { weekday: 'long', year: "2-digit", month: "short", day: "2-digit" };
 class Order extends React.Component {
 
 
@@ -39,7 +41,7 @@ class Order extends React.Component {
                 // {headerName:'Row', valueGetter:"node.rowIndex +1", pinned:true},
                 {
                     headerName: "Date", field: "date", sortable: true, filter: true, cellRenderer: (data) => {
-                        return data.value ? (new Date(data.value)).toLocaleDateString('en-US', DateFormat) : '';
+                        return data.value ? (new Date(data.value)).toLocaleDateString('en-US', CellDateFormat) : '';
 
                     }
                 },
@@ -227,7 +229,9 @@ setNormal = (api) => {
                                     style={{ fontSize: "14px" }}>
                                     {selectedDate.toLocaleDateString('en-US', DateFormat)}
                                ---
-                            {(new Date()).toLocaleDateString('en-US', DateFormat)}
+                            {/* {(new Date( new Date().getMonth() +1, 0)).toLocaleDateString('en-US', DateFormat)} */}
+                         { ( new Date(new Date().getFullYear(), new Date().getMonth() + 0, 0)).toLocaleDateString('en-US', DateFormat) }
+                            
                                 </span>
                             </h4>
                             <div className="inline-flex-sec">User:

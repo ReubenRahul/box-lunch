@@ -15,7 +15,7 @@ const LunchBox = () => {
                   <li> <Link to = "/"> <FontAwesomeIcon title = "Users" icon={faUserFriends } /> </Link> </li>
                   <li>  <Link  to="/vendors">  <FontAwesomeIcon title = "Vendor" icon={faPizzaSlice} /> </Link> </li>
                   <li>  <Link  to="/order">  <FontAwesomeIcon  title = "Order" icon={faShoppingCart} /> </Link> </li>
-                  <li> <Link  to="/testing"> <FontAwesomeIcon title = "Billing"  icon={faMoneyBill} /> </Link> </li>
+                  <li> <Link  to="/billing"> <FontAwesomeIcon title = "Billing"  icon={faMoneyBill} /> </Link> </li>
               </ul>
 
             </div>

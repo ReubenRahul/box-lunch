@@ -1,23 +1,22 @@
 import React, { Component, useEffect, useState } from 'react'
+import ReactSelect from 'react-select';
 import { quantity } from '../Common/Constant';
 import { Radio, Button, Select, Label, Form } from '../Common/Form';
 import { useStateValue } from '../../StateProvider';
-import { db } from '../../Firebase/Firebase';
 import { USERS_OPTION, VENDOR_OPTION, VENDOR_MENU } from '../../+store/Action';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getMenuDetails, handleAddOrder } from '../../+store/FirebaseUrls';
 import { convertDate } from '../../Utils/helper'
 import { fetchUsers } from '../../+store/URL/User/UsersUrls';
 import { fetchVendorAction } from '../../+store/URL/VendorActions/VendorAction';
-import { addOrderAction, fetchOrderAction } from '../../+store/URL/OrderActions';
+import { addOrderAction, } from '../../+store/URL/OrderActions';
 import firebase from 'firebase';
 import { getVendorMenu } from '../../+store/URL/MenuActions';
-
 
 const AddOrder = (props) => {
 
     const [{ vendorOptions, userOptions, vendorMenus }, dispatch] = useStateValue();
+    const [selectedUserLength, setSelectedUserLength] = useState(0);
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedVendor, setSelectedVendor] = useState('');
     const [selectedVendorMenuOption, setSelectedVendorMenuOption] = useState('');
@@ -25,7 +24,10 @@ const AddOrder = (props) => {
     const [selectedQunatity, setSelectedQunatity] = useState(quantity[1])
     const [menuOptions, setMenuOptions] = useState([])
     const [errorFound, setErrorFound] = useState(false);
+    const [ userOptionsArr , setUserOptionsArr ] = useState( [] );
     const [errors, setErrors] = useState({});
+
+
 
 
 
@@ -35,9 +37,23 @@ const AddOrder = (props) => {
     //   this.getVendorMenuHandler = this.getVendorMenuHandler.bind(this);
 
     const formInputHandle = inputType => (event) => {
+
         switch (inputType) {
             case "user":
+                // const stateOptions = userOptionsArr.filter(
+                //     option => !(event.target.value).find(op => op === option)
+                //   );
+                // const orderedNewOptions = (event.target.value).sort(compare);
+
+                // setUserOptionsArr(orderedNewOptions.concat(stateOptions));
                 setSelectedUser(event.target.value);
+                // this.setState({
+                //   options: orderedNewOptions.concat(stateOptions)
+                // });
+
+
+
+                // setSelectedUser(event.target.value);
                 break;
             case "vendor":
                 setSelectedVendor(event.target.value);
@@ -79,7 +95,26 @@ const AddOrder = (props) => {
             // const userData = db.ref("users").orderByKey();
             // userData.once("value", getUserHandler)
         }
+
     }, [])
+
+
+    useEffect( () => {
+        const arr = [];
+        if ( typeof userOptions === 'object' )
+        {
+           for( const [ key ,value ] of  Object.entries(userOptions) )
+           {
+            arr.push( {
+                value: key,
+                label:value
+            })
+           }
+            const final =  arr.sort(compare);
+           setUserOptionsArr( [...final ] );
+        }
+
+    }, [userOptions]);
 
     useEffect(() => {
         if (!vendorMenus.length) {
@@ -119,10 +154,7 @@ const AddOrder = (props) => {
         formValidation();
         event.preventDefault();
         const selectedVendorMenuOpt = vendorMenus.filter(menu => menu.id === selectedVendorMenuOption);
-        const data = {
-            user: {
-                name: userOptions[selectedUser]
-            },
+        const request = {
             isPaid: false,
             vendorMenu: {
                 vendor: vendorOptions[selectedVendor],
@@ -133,15 +165,55 @@ const AddOrder = (props) => {
                     detail: selectedVendorMenuOpt[0].details,
                 }
             },
-            userId: selectedUser,
             quantity: selectedQunatity,
             date: convertDate(date),
             dateTimestamp: firebase.firestore.Timestamp.fromDate(new Date(date)).seconds
-            // firebase.firestore.date.serverTimestamp().toDate()
         }
-        addOrderAction(data).then((res) => {
-            alert(res.msg)
-        });
+let userLength = selectedUser.length;
+let countLength = 1;
+        selectedUser.map( user => {
+           const rec = {
+                userId: user.value,
+                user: {
+                    name: user.label
+                }
+            }
+            const finalRequest = {
+               ...rec,
+                ...request
+            }
+            addOrderAction(finalRequest).then((res) => {
+                // countLength++;
+                if (userLength === ++countLength) {
+                    alert('completed')
+                }
+            });
+        } )
+        // }
+        // const data = {
+        //     // user: {
+        //     //     name: userOptions[selectedUser]
+        //     // },
+        //     users :selectedUser,
+        //     isPaid: false,
+        //     vendorMenu: {
+        //         vendor: vendorOptions[selectedVendor],
+        //         vendorId: selectedVendor,
+        //         menu: {
+        //             menuId: selectedVendorMenuOption,
+        //             price: selectedVendorMenuOpt[0].price,
+        //             detail: selectedVendorMenuOpt[0].details,
+        //         }
+        //     },
+        //     // userId: selectedUser,
+        //     quantity: selectedQunatity,
+        //     date: convertDate(date),
+        //     dateTimestamp: firebase.firestore.Timestamp.fromDate(new Date(date)).seconds
+        //     // firebase.firestore.date.serverTimestamp().toDate()
+        // }
+        // addOrderAction(data).then((res) => {
+        //     alert(res.msg)
+        // });
 
     }
 
@@ -173,6 +245,26 @@ const AddOrder = (props) => {
         setErrors(errors)
 
     }
+    const customStyles = {
+        option: (provided, state) => ({
+          ...provided,
+          textAlign:'left !important',
+        }),
+    }
+
+const reactSelectFormInput = selectOption => {
+    // const stateOptions = userOptionsArr.filter(
+    //     option => !selectOption.find(op => op === option)
+    // )
+    // const orderedNewOptions = selectOption.sort(compare);
+    // setUserOptionsArr(orderedNewOptions.concat(stateOptions) );
+    console.log({selectedUser})
+    setSelectedUserLength(selectedUser.length+1);
+    setSelectedUser(selectOption);
+}
+const compare = (a, b) => {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  }
     return (
         <Form style={{ width: "60%", margin: 'auto' }} onSubmit={handleSubmit}>
             <div className="form-group">
@@ -202,12 +294,22 @@ const AddOrder = (props) => {
 
             <div className="form-group">
                 <Label value="User Name" />
-                <Select
+                <ReactSelect
                     name="user"
                     value={selectedUser}
-                    options={userOptions}
-                    onChange={formInputHandle("user")}
+                    options={userOptionsArr}
+                    hideSelectedOptions={false}
+                    onChange={reactSelectFormInput}
+                    isMulti
+                    isSearchable
+                    styles = {customStyles}
                 />
+              
+            </div>
+
+            <div className="form-group">
+            <Label value=" Total Count" />
+                {selectedUserLength}
             </div>
 
             <div className="form-group">

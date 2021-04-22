@@ -1,6 +1,23 @@
 import { orderCollection} from '../Collections';
 import {addedResponse, deleteResponse, updatedResponse} from '../Status';
 import firebase from 'firebase';
+import {getFirstDayOfNextMonth} from "../../../Utils/helper";
+const fetchOrderInDateRange = (startDate , isPaid = false) => {
+    const startDateSecond = firebase.firestore.Timestamp.fromDate(startDate).seconds;
+    const endDateSecond =  firebase.firestore.Timestamp.fromDate(getFirstDayOfNextMonth(startDate)).seconds;
+
+    console.log( {startDateSecond, endDateSecond})
+    return  orderCollection
+            .where("dateTimestamp", "<=", endDateSecond)
+            .where("dateTimestamp", ">", startDateSecond)
+            .where('isPaid', '==', isPaid).get()
+            .then(snapshot => snapshot.docs.map(doc => ({
+                ...doc.data(),
+                key: doc.id
+            }),
+        )
+    )
+}
 
 
 const fetchOrderAction = (selectedDate, selectedUser, isPaid = false)  => {
@@ -8,6 +25,9 @@ const fetchOrderAction = (selectedDate, selectedUser, isPaid = false)  => {
     tomorrow.setDate(new Date().getDate()+1);
     const tomorrowDate = firebase.firestore.Timestamp.fromDate(tomorrow).seconds;
     const selectedDateSecond = firebase.firestore.Timestamp.fromDate(new Date(selectedDate)).seconds;
+
+
+    console.log({tomorrowDate, selectedDateSecond}) 
     let query = orderCollection
         .where("dateTimestamp", "<=", tomorrowDate)
         .where("dateTimestamp", ">", selectedDateSecond);
@@ -102,6 +122,7 @@ const markOrderPaid = (userId, startDate, endDate) => {
     // })
 }
 export {
+    fetchOrderInDateRange,
     fetchOrderAction,
     addOrderAction,
     fetchUserOrderOnDateRange,
