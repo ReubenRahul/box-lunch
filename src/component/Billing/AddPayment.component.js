@@ -7,16 +7,8 @@ import { addBilling } from '../../+store/URL/BillingAction';
 import { fetchOrderInDateRange, markOrderPaid } from '../../+store/URL/OrderActions';
 import { userRecordForPayment } from './store/AddPayment.model';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-
-
-import  ApprovalRenderer from './Approval'
 import CheckboxRenderer from './CheckboxRenderer'
-
-import GenderRenderer from './genderRenderer';
 import {getFirstDayOfNextMonth} from "../../Utils/helper";
-
-
-
 const AddPaymentComponent = (props) => {
 
     const  columnDefsRec = [
@@ -24,17 +16,13 @@ const AddPaymentComponent = (props) => {
         { headerName: "Name", field: "name", sortable: true, filter: true },
         { headerName: "Quantity", field: "quantity", width: "100px" },
         { headerName: "Order Amount", field: "amount", sortable: true, filter: true },
-        { headerName: "Approval", field: "gender", sortable: true, filter: true },
         {
             headerName: "Paid",
-            field: "registered",
+            field: "is_paid",
             cellRenderer: "checkboxRenderer"
         },
-        // { headerName: "Discount", field: "discount", sortable: true, filter: true },
-        { headerName: "Final", field: "final", sortable: true, filter: true },
+        { headerName: "Amount Paid", field: "final", sortable: true, filter: true },
 
-
-        // { headerName: "Delete", field: "value", cellRenderer: "deleteButtonRenderer", colId: 'params', clickHandler: this.clickHandleData, },
     ];
 
 
@@ -42,37 +30,26 @@ const AddPaymentComponent = (props) => {
     const [ rowData, setRowData ] = useState( [] );
 
     const [startDate, setStartDate] = useState(props.startDate);
-    const [endDate, setEndDate] = useState(props.endDate)
-    const [payingMethod, setPayingMethod] = useState(1);
-    const [discount, setDiscount] = useState(0)
-    const [subTotal, setSubTotal] = useState(props.total);
+
 
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
 
 
     const onGridReady = (params) => {
-        console.log({params})
         setGridApi(params.api);
         setGridColumnApi(params.columnApi);
       };
-    // const onGridReady = (params) => {
-    //     this.gridApi = params.api;
-    //     this.gridColumnApi = params.columnApi;
-
-    //     params.api.expandAll();
-    //   };
 
 
     useEffect(() => {
         if ( startDate)
         {
-
-                fetchOrderInDateRange( startDate )
-                .then(res => {
-                    const result =  userRecordForPayment(res);
-                    setRowData(result)
-                })
+        fetchOrderInDateRange( startDate )
+            .then(res => {
+                const result =  userRecordForPayment(res);
+                setRowData(result)
+            })
         }
 
     }, [startDate])
@@ -80,12 +57,9 @@ const AddPaymentComponent = (props) => {
 
     const paymentHandler = ()  => {
 
-        const body = {
-            billing: [],
-        };
         gridApi.forEachNode((rowNode, index) => {
             const athleteInfo = Object.assign({}, rowNode.data);
-            if ( athleteInfo.final)
+            if ( athleteInfo.is_paid)
             {
                 const billingStatus = async () => {
                     await addBilling({
@@ -100,10 +74,12 @@ const AddPaymentComponent = (props) => {
                     })
                     .then(res => console.log(res));
                     const endDate = getFirstDayOfNextMonth(startDate)
-                        // new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
                     markOrderPaid(athleteInfo.userId, startDate, endDate);
                 }
                 billingStatus().then(res => console.log('', res));
+                setTimeout( () => {
+                    window.location.reload();
+                }, 10*1000)
                 return false;
             }
         })
@@ -127,7 +103,7 @@ const AddPaymentComponent = (props) => {
                 <div className="ag-theme-alpine">
                 <div
                 id="myGrid"
-                style={{ width: "80%", margin: "auto", height: "800px" }}>
+                style={{ width: "80%", margin: "auto", height: "600px" }}>
 
                     <AgGridReact
                          columnDefs={columnDefs}
@@ -173,70 +149,5 @@ const AddPaymentComponent = (props) => {
 }
 
 
-const createRowData = () => {
-    const cloneObject = (obj) => JSON.parse(JSON.stringify(obj));
-    const students = [
-        {
-            first_name: 'Bob',
-            last_name: 'Harrison',
-            gender: 'Male',
-            address:
-                '1197 Thunder Wagon Common, Cataract, RI, 02987-1016, US, (401) 747-0763',
-            mood: 'Happy',
-            country: {
-                name: 'Ireland',
-                code: 'IE',
-            },
-        },
-        {
-            first_name: 'Mary',
-            last_name: 'Wilson',
-            gender: 'Female',
-            age: 11,
-            address: '3685 Rocky Glade, Showtucket, NU, X1E-9I0, CA, (867) 371-4215',
-            mood: 'Sad',
-            country: {
-                name: 'Ireland',
-                code: 'IE',
-            },
-        },
-        {
-            first_name: 'Sadiq',
-            last_name: 'Khan',
-            gender: 'Male',
-            age: 12,
-            address:
-                '3235 High Forest, Glen Campbell, MS, 39035-6845, US, (601) 638-8186',
-            mood: 'Happy',
-            country: {
-                name: 'Ireland',
-                code: 'IE',
-            },
-        },
-        {
-            first_name: 'Jerry',
-            last_name: 'Mane',
-            gender: 'Male',
-            age: 12,
-            address:
-                '2234 Sleepy Pony Mall , Drain, DC, 20078-4243, US, (202) 948-3634',
-            mood: 'Happy',
-            country: {
-                name: 'Ireland',
-                code: 'IE',
-            },
-        },
-    ];
-    students.forEach((item) => {
-        students.push(cloneObject(item));
-    });
-    students.forEach((item) => {
-        students.push(cloneObject(item));
-    });
-    students.forEach((item) => {
-        students.push(cloneObject(item));
-    });
-    return students;
-};
 
 export default AddPaymentComponent;

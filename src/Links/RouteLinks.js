@@ -12,6 +12,7 @@ import ListComponent  from '../component/Billing/List.Component';
 import PayBillingComponent from '../component/Billing/Pay.Component'
 import loginForm from "../component/login/form";
 import AddPaymentComponent from '../component/Billing/AddPayment.component';
+import PaymentListComponent from '../component/Payments/PaymentList.component';
 //let do this lazy
 // const Product = lazy(() => import('./ProductHandler'));
 
@@ -35,7 +36,7 @@ const RouteLinks = () => {
                 <Route exact path = "/" component = {UserComponent}/>
                 <Route exact path="/billing/add" component={AddPaymentComponent} />
                 <Route exact path ="/billing/:userId?/user" component={ListComponent} />
-                <Route exact path="/billing" component={ListComponent} />
+                <Route exact path="/billing" component={PaymentListComponent} />
                 <Route path=""  render= {() => (<div> <h2> 404 Url Not Found </h2> </div>)} />
             </Switch>
 

@@ -2,18 +2,26 @@ export const userRecordForPayment = (orders) => {
     const output = [];
 
 	orders.map( (user ) => {
+       
   	let amount =  output[user.userId ] && output[user.userId ].amount 
-                     ? Number(output[user.userId ].amount) + Number(user.vendorMenu.menu.price) 
-                     : user.vendorMenu.menu.price;
+                     ? 
+                        Number(output[user.userId ].amount) 
+                         +  ( Number(user.vendorMenu.menu.price) * user.quantity )
+                     : user.vendorMenu.menu.price *  user.quantity;
+
+
     let quantity =     output[user.userId ] && output[user.userId ].quantity 
-                        ?  Number(output[user.userId ].quantity)  + 1 
-                        : 1;                  
+                        ?  Number(output[user.userId ].quantity)  +  Number (user.quantity) 
+                        :  user.quantity;                  
+
+ 
 
         output[ user.userId ] = {
                 userId: user.userId,
                 amount: amount,
                 quantity,
                 name:  user.user.name,
+                final: amount
           };
           return output;
     })

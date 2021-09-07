@@ -12,7 +12,23 @@ const addBilling = (params) => {
            .catch(err => console.log(err))
 }
 
+
+const getBilling = () => {
+
+    return billingCollection
+            .get()
+            .then( snapshot => {
+                return snapshot.docs.map( doc => ( {
+                    ...doc.data(),
+                    key:doc.id
+                }))
+            })
+            .catch(err => console.log(err, 'err'))
+}
+
+
 export  {
-    addBilling
+    addBilling,
+    getBilling
 }
 
